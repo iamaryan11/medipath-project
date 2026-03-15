@@ -1,0 +1,28 @@
+# --- Node.js / MERN ---
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.env
+.DS_Store
+
+# --- Python / FastAPI ---
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.python-version
+
+# --- Environment & Sensitive Data ---
+.env
+.env.local
+.env.*.local
+
+# --- IDE / OS Specific ---
+.vscode/
+.idea/
+.DS_Store
+dist/
+build/
