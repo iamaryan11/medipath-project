@@ -1,48 +1,31 @@
-import heapq
-city_graph = {
-    'Sector 17': [('Sector 22', 1.5), ('Sector 16', 1.2), ('Sector 8', 2.0)],
-    # Added ('Civil Hospital-Sector 22', 0.2) to Sector 22's list
-    'Sector 22': [('Sector 17', 1.5), ('Sector 35', 2.1), ('Sector 23', 0.8), ('Civil Hospital-Sector 22', 0.2)],
-    'Sector 16': [('Sector 17', 1.2), ('Sector 15', 1.0), ('Sector 10', 1.5)],
-    'Sector 35': [('Sector 22', 2.1), ('Sector 43', 1.8), ('Sector 34', 1.0)],
-    'Sector 43': [('Sector 35', 1.8), ('ISBT 43', 0.5)],
-    'Sector 8':  [('Sector 17', 2.0), ('Sector 9', 0.5)],
+import requests
+def calculate_osrm_route(start_lat, start_lng, end_lat, end_lng):
+    """
+    Calls the free public OSRM API to get the real road route.
+    OSRM takes coordinates in longitude,latitude format.
+    """
+    url = f"http://router.project-osrm.org/route/v1/driving/{start_lng},{start_lat};{end_lng},{end_lat}?overview=full&geometries=geojson"
     
-    'Civil Hospital-Sector 22': [('Sector 22', 0.2)], 
-    'Mamta Child Health': [('Sector 17', 0.4)],
-
-    'Sector 34': [('Sector 35', 1.0)],
-    'Sector 23': [('Sector 22', 0.8)],
-    'Sector 15': [('Sector 16', 1.0)],
-    'Sector 10': [('Sector 16', 1.5)],
-    'ISBT 43':   [('Sector 43', 0.5)],
-    'Sector 9':  [('Sector 8', 0.5)]
-}
-def calculate_dijkstra(start_node, end_node):
-    if start_node not in city_graph or end_node not in city_graph:
-        return None, None
-    
-    distances = {node: float('infinity') for node in city_graph}
-    distances[start_node] = 0
-    pq = [(0, start_node)]
-    predecessors = {node: None for node in city_graph}
-
-    while pq:
-        current_distance, current_node = heapq.heappop(pq)
-        if current_distance > distances[current_node]: continue
-        if current_node == end_node: break
-
-        for neighbor, weight in city_graph.get(current_node, []):
-            distance = current_distance + weight
-            if distance < distances[neighbor]:
-                distances[neighbor] = distance
-                predecessors[neighbor] = current_node
-                heapq.heappush(pq, (distance, neighbor))
-
-    path = []
-    curr = end_node
-    while curr is not None:
-        path.append(curr)
-        curr = predecessors[curr]
-    
-    return path[::-1], distances[end_node]
+    headers = {
+        "User-Agent": "MediPath_Router/1.0 (Integration for College Project)"
+    }
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        if data.get("code") == "Ok" and len(data.get("routes", [])) > 0:
+            route = data["routes"][0]
+            distance_km = route["distance"] / 1000.0  
+            duration_minutes = route["duration"] / 60.0  
+            geometry = route["geometry"] 
+            return {
+                "success": True,
+                "distance_km": round(distance_km, 2),
+                "duration_minutes": round(duration_minutes, 2),
+                "geometry": geometry
+            }
+        else:
+            return {"success": False, "message": "No route found by OSRM."}
+    except Exception as e:
+        print(f"OSRM Routing Error: {e}")
+        return {"success": False, "message": str(e)}

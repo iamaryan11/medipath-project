@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+@theme {
+  --color-hosp-bg: var(--bg-primary);
+  --color-hosp-surface: var(--bg-surface);
+  --color-hosp-primary: var(--primary-base);
+  --color-hosp-primary-dark: var(--primary-dark);
+  --color-hosp-accent: var(--accent-base);
+  --color-hosp-accent-dark: var(--accent-dark);
+  --color-hosp-text: var(--text-primary);
+  --color-hosp-muted: var(--text-muted);
+  --color-hosp-border: var(--border-color);
+
+  --font-heading: 'Roboto', sans-serif;
+  --font-body: 'Roboto', sans-serif;
+  --font-mono: 'Roboto Mono', monospace;
+}
+
+:root {
+  /* Light Theme Variables */
+  --bg-primary: #F3F4F6;       /* Soft Gray */
+  --bg-surface: #FFFFFF;       /* Crisp White */
+  --primary-base: #0284C7;     /* Trust Blue */
+  --primary-dark: #0369A1;
+  --accent-base: #DC2626;      /* Alert Red */
+  --accent-dark: #B91C1C;
+  --text-primary: #111827;
+  --text-muted: #6B7280;
+  --border-color: #E5E7EB;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+:root.dark {
+  /* Dark Theme Variables */
+  --bg-primary: #111827;       /* Dark Navy/Gray */
+  --bg-surface: #1F2937;       /* Surface Dark */
+  --primary-base: #38BDF8;     /* Light Blue */
+  --primary-dark: #0EA5E9;
+  --accent-base: #EF4444;      /* Bright Red */
+  --accent-dark: #DC2626;
+  --text-primary: #F9FAFB;
+  --text-muted: #9CA3AF;
+  --border-color: #374151;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+@layer utilities {
+  .bg-hosp-bg { background-color: var(--color-hosp-bg); }
+  .bg-hosp-surface { background-color: var(--color-hosp-surface); }
+  
+  .text-hosp-primary { color: var(--color-hosp-primary); }
+  .bg-hosp-primary { background-color: var(--color-hosp-primary); }
+  .hover\:bg-hosp-primary-dark:hover { background-color: var(--color-hosp-primary-dark); }
+
+  .text-hosp-accent { color: var(--color-hosp-accent); }
+  .bg-hosp-accent { background-color: var(--color-hosp-accent); }
+  .hover\:bg-hosp-accent-dark:hover { background-color: var(--color-hosp-accent-dark); }
+
+  .border-hosp { border-color: var(--color-hosp-border); }
+  .text-hosp-muted { color: var(--color-hosp-muted); }
+
+  .hosp-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    border-radius: 0.5rem; /* 8px for sharper, rigid look */
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+}
+
+/* Leaflet Overrides */
+.leaflet-container {
+  background: var(--bg-primary) !important;
+}
+
+.custom-popup .leaflet-popup-content-wrapper {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border-radius: 4px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+}
+
+.custom-popup .leaflet-popup-tip {
+  background: var(--bg-surface);
+}
+
+.animate-route {
+  stroke-dasharray: 20;
+  animation: dash 10s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -100;
+  }
+}

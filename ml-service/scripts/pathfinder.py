@@ -15,20 +15,13 @@ city_graph = {
 }
 
 def dijkstra(graph, start_node, end_node):
-    # Distances dictionary initialized to infinity
     distances = {node: float('infinity') for node in graph}
     distances[start_node] = 0
-    
-    # Priority queue: (distance, current_node)
     pq = [(0, start_node)]
-    
-    # To store the actual path
     predecessors = {node: None for node in graph}
 
     while pq:
         current_distance, current_node = heapq.heappop(pq)
-
-        # Optimization: skip if we found a better way already
         if current_distance > distances[current_node]:
             continue
 
@@ -42,8 +35,6 @@ def dijkstra(graph, start_node, end_node):
                 distances[neighbor] = distance
                 predecessors[neighbor] = current_node
                 heapq.heappush(pq, (distance, neighbor))
-
-    # Reconstruct the path
     path = []
     curr = end_node
     while curr is not None:

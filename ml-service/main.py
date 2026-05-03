@@ -4,16 +4,16 @@ import pandas as pd
 import numpy as np
 import math 
 from sklearn.neighbors import BallTree
-# Import the logic from our new file
-from router import calculate_dijkstra
+
+from router import calculate_osrm_route
+import os
+
 app = FastAPI()
 try:
-    df = pd.read_csv("final_master_tricity.csv")
-    # Convert Lat/Long to Radians for Haversine formula
+    csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "final_master_tricity.csv")
+    df = pd.read_csv(csv_path)
     hospital_coords = np.deg2rad(df[['latitude', 'longitude']].values)
     
-    # 2. Build the KNN Model (BallTree is best for Earth coordinates)
-    # metric='haversine' ensures we calculate distance on a sphere
     tree = BallTree(hospital_coords, metric='haversine')
     print(" KNN Model Trained on Tri-City Data")
 except Exception as e:
@@ -27,14 +27,10 @@ class Location(BaseModel):
 @app.post("/recommend")
 async def recommend_hospitals(loc: Location):
     try:
-        # Convert user input to Radians
         user_coord = np.deg2rad([[loc.latitude, loc.longitude]])
         
-        # 3. Query the Tree for 'K' nearest neighbors
-        # distances are in radians, indices are the row numbers in our CSV/DB
         dist, ind = tree.query(user_coord, k=loc.k)
         
-        # Convert distance to Kilometers (Earth radius = 6371km)
         kms = dist[0] * 6371
         
         results = []
@@ -55,24 +51,22 @@ async def recommend_hospitals(loc: Location):
 
 
 class RouteRequest(BaseModel):
-    start: str
-    end: str
+    start_lat: float
+    start_lng: float
+    end_lat: float
+    end_lng: float
 
 @app.post("/calculate-route")
 async def get_route(request: RouteRequest):
-    path, distance = calculate_dijkstra(request.start, request.end)
-    if path is None or math.isinf(distance):
-        return {
-            "success": False,
-            "message": f"No road connection found between {request.start} and {request.end}",
-            "path": [],
-            "total_distance_km": None
-        }
-    return {
-        "success": True,
-        "path": path,
-        "total_distance_km": round(distance, 2)
-    }
+    result = calculate_osrm_route(
+        request.start_lat, request.start_lng, 
+        request.end_lat, request.end_lng
+    )
+    
+    if not result.get("success"):
+        raise HTTPException(status_code=400, detail=result.get("message", "Route calculation failed"))
+        
+    return result
 
 
 if __name__ == "__main__":
