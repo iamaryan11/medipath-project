@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Setup Axios instance
 export const api = axios.create({
-  baseURL: 'http://localhost:1111/api', // Pointing to the Express Gateway
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:1111/api', // Pointing to the Express Gateway
   headers: {
     'Content-Type': 'application/json'
   }
