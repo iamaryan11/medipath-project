@@ -4,7 +4,7 @@ def calculate_osrm_route(start_lat, start_lng, end_lat, end_lng):
     Calls the free public OSRM API to get the real road route.
     OSRM takes coordinates in longitude,latitude format.
     """
-    url = f"http://router.project-osrm.org/route/v1/driving/{start_lng},{start_lat};{end_lng},{end_lat}?overview=full&geometries=geojson"
+    url = f"https://router.project-osrm.org/route/v1/driving/{start_lng},{start_lat};{end_lng},{end_lat}?overview=full&geometries=geojson"
     
     headers = {
         "User-Agent": "MediPath_Router/1.0 (Integration for College Project)"
