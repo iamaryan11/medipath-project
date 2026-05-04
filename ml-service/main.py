@@ -10,7 +10,7 @@ import os
 
 app = FastAPI()
 try:
-    csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "final_master_tricity.csv")
+    csv_path = os.path.join(os.path.dirname(__file__), "final_master_tricity.csv")
     df = pd.read_csv(csv_path)
     hospital_coords = np.deg2rad(df[['latitude', 'longitude']].values)
     
